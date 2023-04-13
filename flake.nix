@@ -24,7 +24,7 @@
       in {
         packages = rec {
           valheimServer = pkgs.callPackage ./pkgs/valheim {
-            fetchSteam = steam-fetcher.lib.${system}.packages.default;
+            fetchSteam = steam-fetcher.lib.${system}.fetchSteam;
           };
           default = valheimServer;
         };

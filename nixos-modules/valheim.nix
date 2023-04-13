@@ -22,7 +22,9 @@ in {
       example = "Midgard";
       description = lib.mdDoc ''
         The name of the world file to use, without the extension.
-        If unset, then the server will generate a world from a random seed on first run.
+        If unset, then the server will use a default name.
+        In either case, if the world does not exist, then the server will
+        generate a world from a random seed.
       '';
     };
 

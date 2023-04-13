@@ -22,9 +22,6 @@ stdenvNoCC.mkDerivation rec {
     autoPatchelfHook
   ];
 
-  postFixup = ''
-    chmod +x valheim_server.x86_64
-  '';
 
   installPhase = ''
     runHook preInstall
@@ -36,6 +33,8 @@ stdenvNoCC.mkDerivation rec {
       $src/valheim_server.x86_64 \
       $src/valheim_server_Data \
       $out
+
+    chmod +x $out/valheim_server.x86_64
 
     runHook postInstall
   '';

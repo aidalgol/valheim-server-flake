@@ -1,4 +1,5 @@
 {
+  lib,
   stdenv,
   fetchSteam,
   autoPatchelfHook,
@@ -49,7 +50,7 @@ stdenv.mkDerivation rec {
 
     makeWrapper $out/valheim_server.x86_64 $out/valheim_server \
       --set SteamAppId 892970 \
-      --prefix LD_LIBRARY_PATH : ${steamworksSdkRedist}/lib64
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [steamworksSdkRedist]}
 
     runHook postInstall
   '';

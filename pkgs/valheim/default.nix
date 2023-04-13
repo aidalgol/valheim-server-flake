@@ -2,6 +2,8 @@
   stdenv,
   fetchSteam,
   autoPatchelfHook,
+  makeWrapper,
+  steamworksSdkRedist,
   zlib,
   pulseaudio,
 }:
@@ -22,6 +24,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoPatchelfHook
+    makeWrapper
   ];
 
   buildInputs = [
@@ -42,6 +45,10 @@ stdenv.mkDerivation rec {
       $out
 
     chmod +x $out/valheim_server.x86_64
+
+    makeWrapper $out/valheim_server.x86_64 $out/valheim_server \
+      --set SteamAppId 892970 \
+      --prefix LD_LIBRARY_PATH : ${steamworksSdkRedist}/lib64
 
     runHook postInstall
   '';

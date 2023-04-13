@@ -52,22 +52,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1681154110,
-        "narHash": "sha256-OQwWzlzAY1dCqgSsgZzsPIOGmX4pBGaoXOy0rSl4b5Y=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "115a96e2ac1e92937cd47c30e073e16dcaaf6247",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-22.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -78,14 +62,16 @@
     "steam-fetcher": {
       "inputs": {
         "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1681345289,
-        "narHash": "sha256-Pl0ammON124bU9PTHgYj3zC5R0k0mjtiQWnFCF3668Q=",
+        "lastModified": 1681381845,
+        "narHash": "sha256-CJXQxSXvLWJQXw+zIztkJErRovYXAzgWaFxvrWyUs8o=",
         "owner": "aidalgol",
         "repo": "nix-steam-fetcher",
-        "rev": "9fb6e380e0692c86b46dc19caeda58eb17a5bfd5",
+        "rev": "950d335efc76952f8b57c75a96ba0150b7a76186",
         "type": "github"
       },
       "original": {

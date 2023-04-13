@@ -72,10 +72,10 @@ in {
         Type = "exec";
         User = "valheim";
         ExecStart = lib.strings.concatStringsSep " " ([
-            "${valheim-server}/valheim_server.x86_64"
+            "${valheim-server}/valheim_server"
             "-name ${cfg.serverName}"
           ]
-          ++ (lib.lists.optional (!isNull cfg.worldName) "-world ${cfg.worldName}")
+          ++ (lib.lists.optional (cfg.worldName != null) "-world ${cfg.worldName}")
           ++ [
             "-port ${builtins.toString cfg.port}"
             "-password ${cfg.password}"

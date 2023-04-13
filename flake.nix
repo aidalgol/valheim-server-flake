@@ -4,7 +4,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
     flake-utils.url = "github:numtide/flake-utils";
-    steam-fetcher.url = "github:aidalgol/nix-steam-fetcher";
+    steam-fetcher = {
+      url = "github:aidalgol/nix-steam-fetcher";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -24,7 +27,8 @@
       in {
         packages = rec {
           valheimServer = pkgs.callPackage ./pkgs/valheim {
-            fetchSteam = steam-fetcher.lib.${system}.fetchSteam;
+            inherit (steam-fetcher.lib.${system}) fetchSteam;
+            inherit (steam-fetcher.packages.${system}) steamworksSdkRedist;
           };
           default = valheimServer;
         };

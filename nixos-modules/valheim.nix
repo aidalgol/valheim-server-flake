@@ -31,7 +31,11 @@ in {
     port = lib.mkOption {
       type = lib.types.port;
       default = 2456;
-      description = lib.mdDoc "The port on which to listen for incoming connections.";
+      description = lib.mdDoc ''
+        The port on which to listen for incoming connections.
+
+        Note that the port just above this one will be used for the Steam server browser service.
+      '';
     };
 
     openFirewall = lib.mkOption {
@@ -84,8 +88,10 @@ in {
     };
 
     networking.firewall = lib.mkIf cfg.openFirewall {
-      allowedTCPPorts = [cfg.port];
-      allowedUDPPorts = [cfg.port];
+      allowedUDPPorts = [
+        cfg.port
+        (cfg.port + 1) # Steam server browser
+      ];
     };
 
     assertions = [

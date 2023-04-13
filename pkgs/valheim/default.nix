@@ -1,9 +1,11 @@
 {
-  stdenvNoCC,
+  stdenv,
   fetchSteam,
   autoPatchelfHook,
+  zlib,
+  pulseaudio,
 }:
-stdenvNoCC.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "valheim-server";
   version = "0.215.2";
   src = fetchSteam {
@@ -22,6 +24,11 @@ stdenvNoCC.mkDerivation rec {
     autoPatchelfHook
   ];
 
+  buildInputs = [
+    stdenv.cc
+    zlib
+    pulseaudio
+  ];
 
   installPhase = ''
     runHook preInstall

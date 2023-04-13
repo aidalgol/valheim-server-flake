@@ -81,11 +81,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1681339803,
-        "narHash": "sha256-EjrzR55kAz14cX0LR8nPUH0Xe/omzOxPasE27PhRi8g=",
+        "lastModified": 1681345289,
+        "narHash": "sha256-Pl0ammON124bU9PTHgYj3zC5R0k0mjtiQWnFCF3668Q=",
         "owner": "aidalgol",
         "repo": "nix-steam-fetcher",
-        "rev": "0598c1e3bc5f841bebd00f64cc5405269db971b2",
+        "rev": "9fb6e380e0692c86b46dc19caeda58eb17a5bfd5",
         "type": "github"
       },
       "original": {

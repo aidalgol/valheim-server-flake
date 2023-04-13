@@ -77,12 +77,12 @@ in {
         User = "valheim";
         ExecStart = lib.strings.concatStringsSep " " ([
             "${valheim-server}/valheim_server"
-            "-name ${cfg.serverName}"
+            "-name \"${cfg.serverName}\""
           ]
-          ++ (lib.lists.optional (cfg.worldName != null) "-world ${cfg.worldName}")
+          ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")
           ++ [
-            "-port ${builtins.toString cfg.port}"
-            "-password ${cfg.password}"
+            "-port \"${builtins.toString cfg.port}\""
+            "-password \"${cfg.password}\""
           ]);
       };
     };

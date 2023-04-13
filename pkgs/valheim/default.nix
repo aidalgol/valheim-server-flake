@@ -49,9 +49,12 @@ stdenv.mkDerivation rec {
     chmod +x $out/valheim_server.x86_64
 
     makeWrapper $out/valheim_server.x86_64 $out/valheim_server \
-      --set SteamAppId 892970 \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [steamworksSdkRedist]}
+      --set SteamAppId 892970
 
     runHook postInstall
+  '';
+
+  postFixup = ''
+    patchelf --add-needed "steamclient.so" $out/valheim_server.x86_64
   '';
 }

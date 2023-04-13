@@ -31,6 +31,7 @@ stdenv.mkDerivation rec {
     stdenv.cc
     zlib
     pulseaudio
+    steamworksSdkRedist
   ];
 
   installPhase = ''

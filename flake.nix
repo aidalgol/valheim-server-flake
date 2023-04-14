@@ -26,17 +26,25 @@
         ];
       in {
         packages = rec {
-          valheimServer = pkgs.callPackage ./pkgs/valheim {
+          default = valheim-server;
+
+          valheim-server-unwrapped = pkgs.callPackage ./pkgs/valheim-server {
             inherit (steam-fetcher.lib.${system}) fetchSteam;
-            inherit (steam-fetcher.packages.${system}) steamworksSdkRedist;
           };
-          valheimPlus = pkgs.callPackage ./pkgs/valheim-plus {};
-          valheimServerPlus = pkgs.callPackage ./pkgs/valheim {
+
+          valheim-server = pkgs.callPackage ./pkgs/valheim-server/fhsenv.nix {
+            inherit valheim-server-unwrapped;
+            inherit (steam-fetcher.packages.${system}) steamworks-sdk-redist;
+          };
+
+          valheim-server-plus-unwrapped = pkgs.callPackage ./pkgs/valheim-server/plus.nix {
             inherit (steam-fetcher.lib.${system}) fetchSteam;
-            inherit (steam-fetcher.packages.${system}) steamworksSdkRedist;
-            inherit valheimPlus;
           };
-          default = valheimServer;
+
+          valheim-server-plus = pkgs.callPackage ./pkgs/valheim-server/fhsenv-plus.nix {
+            inherit valheim-server-plus-unwrapped;
+            inherit (steam-fetcher.packages.${system}) steamworks-sdk-redist;
+          };
         };
 
         nixosModules = rec {

@@ -76,7 +76,7 @@ in {
         Type = "exec";
         User = "valheim";
         ExecStart = lib.strings.concatStringsSep " " ([
-            "${valheim-server}/valheim_server"
+            "${valheim-server}/bin/valheim-server"
             "-name \"${cfg.serverName}\""
           ]
           ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")

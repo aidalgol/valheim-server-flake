@@ -13,7 +13,7 @@
 # release.
 stdenv.mkDerivation {
   name = "valheim-server-plus";
-  version = "0.215.2-0.9.9.11";
+  version = "0.215.2-0.9.9.15";
   srcs = [
     (fetchSteam {
       name = "valheim-server";
@@ -23,9 +23,9 @@ stdenv.mkDerivation {
       hash = "sha256-fyctiui0Ee57gFIqJvAVOeOQItydx9Fop5F4nz6RpUQ=";
     })
     (fetchzip {
-      url = "https://github.com/valheimPlus/ValheimPlus/releases/download/0.9.9.11/UnixServer.tar.gz";
+      url = "https://github.com/Grantapher/ValheimPlus/releases/download/0.9.9.15/UnixServer.tar.gz";
       stripRoot = false;
-      hash = "sha256-UlhGb1vxsFbtAkK1p2DMJuffRN26OHnrDB1poPH76JQ=";
+      hash = "sha256-s8tNuK+hQiGy3vU28Y0vIc0lkK2fl4CpmmmKzMtIlz4=";
     })
   ];
 

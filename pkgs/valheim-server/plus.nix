@@ -11,7 +11,7 @@
 # bundles, and that mods are so inherently fragile even at the best of times,
 # there is little benefit in building from source, so we simply use the binary
 # release.
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   name = "valheim-server-plus";
   version = "0.215.2-0.9.9.11";
   srcs = [

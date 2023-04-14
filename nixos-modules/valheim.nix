@@ -22,9 +22,8 @@ in {
       example = "Midgard";
       description = lib.mdDoc ''
         The name of the world file to use, without the extension.
-        If unset, then the server will use a default name.
-        In either case, if the world does not exist, then the server will
-        generate a world from a random seed.
+        If the world does not exist, then the server will generate a world from
+        a random seed.
       '';
     };
 
@@ -133,8 +132,8 @@ in {
         message = "The server name must not be empty.";
       }
       {
-        assertion = cfg.worldName != null -> (cfg.worldName != "");
-        message = "The world name is set but empty.";
+        assertion = cfg.worldName != "";
+        message = "The world name must not be empty.";
       }
       {
         assertion = cfg.password != "";

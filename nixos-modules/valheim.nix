@@ -7,7 +7,7 @@
   cfg = config.services.valheim;
 in {
   options.services.valheim = {
-    enable = lib.mkEnableOption (lib.mdDoc "enable");
+    enable = lib.mkEnableOption (lib.mdDoc "Valheim Dedicated Server");
 
     serverName = lib.mkOption {
       type = lib.types.str;

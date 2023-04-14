@@ -17,7 +17,7 @@
     steam-fetcher,
   }:
     with flake-utils.lib;
-      eachDefaultSystem (system: let
+      eachSystem ["x86_64-linux"] (system: let
         pkgs = import nixpkgs {inherit system;};
 
         linters = with pkgs; [

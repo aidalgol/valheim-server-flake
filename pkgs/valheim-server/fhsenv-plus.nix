@@ -14,6 +14,9 @@ buildFHSUserEnv {
     libdoorstopFilename = "libdoorstop_x64.so";
   in
     writeScript "valheim-server-wrapper" ''
+      # Whether or not to enable Doorstop. Valid values: TRUE or FALSE
+      export DOORSTOP_ENABLE=TRUE
+
       # What .NET assembly to execute. Valid value is a path to a .NET DLL that mono can execute.
       export DOORSTOP_INVOKE_DLL_PATH="${valheim-server-plus-unwrapped}/BepInEx/core/BepInEx.Preloader.dll"
 

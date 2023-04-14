@@ -30,6 +30,12 @@
             inherit (steam-fetcher.lib.${system}) fetchSteam;
             inherit (steam-fetcher.packages.${system}) steamworksSdkRedist;
           };
+          valheimPlus = pkgs.callPackage ./pkgs/valheim-plus {};
+          valheimServerPlus = pkgs.callPackage ./pkgs/valheim {
+            inherit (steam-fetcher.lib.${system}) fetchSteam;
+            inherit (steam-fetcher.packages.${system}) steamworksSdkRedist;
+            inherit valheimPlus;
+          };
           default = valheimServer;
         };
 

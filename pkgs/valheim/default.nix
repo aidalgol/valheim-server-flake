@@ -7,6 +7,8 @@
   steamworksSdkRedist,
   zlib,
   pulseaudio,
+  # Pass ValheimPlus package to add the ValheimPlus mod.
+  valheimPlus ? null
 }:
 stdenv.mkDerivation rec {
   name = "valheim-server";
@@ -48,14 +50,25 @@ stdenv.mkDerivation rec {
 
     chmod +x $out/valheim_server.x86_64
 
+    # We may be able to replace LD_PRELOAD with a patchelf command once
+    # https://github.com/NixOS/patchelf/pull/459
+    # makes it into a release.
     makeWrapper $out/valheim_server.x86_64 $out/valheim_server \
+      ${lib.optionalString (valheimPlus != null)
+        "--set LD_PRELOAD ${valheimPlus}/doorstop_libs/libdoorstop_x64.so"} \
       --set SteamAppId 892970
 
     runHook postInstall
   '';
 
+  preFixup = lib.optionalString (valheimPlus != null) ''
+    addAutoPatchelfSearchPath ${valheimPlus}/doorstop_libs/
+  '';
+
   postFixup = ''
     patchelf --add-needed "steamclient.so" $out/valheim_server.x86_64
+    ${lib.optionalString (valheimPlus != null)
+      "patchelf --add-needed \"libdoorstop_x64.so\" $out/valheim_server.x86_64"}
   '';
 
   meta = with lib; {

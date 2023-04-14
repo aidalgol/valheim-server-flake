@@ -38,6 +38,20 @@ in {
       '';
     };
 
+    crossplay = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = lib.mdDoc ''
+        Whether to enable cross-platform players.
+
+        See the [announcement](https://steamcommunity.com/games/892970/announcements/detail/3308480236523722724)
+        for details on this feature.
+
+        This should be disabled when using a modded server that requires the
+        client to be modded, as only PC versions can run mods.
+      '';
+    };
+
     openFirewall = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -83,7 +97,8 @@ in {
           ++ [
             "-port \"${builtins.toString cfg.port}\""
             "-password \"${cfg.password}\""
-          ]);
+          ]
+          ++ (lib.lists.optional cfg.crossplay "-crossplay"));
       };
     };
 

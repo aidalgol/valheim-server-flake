@@ -52,6 +52,17 @@ in {
       '';
     };
 
+    doorstop = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = lib.mdDoc ''
+        Whether to enable Doorstop.
+
+        Only has effect when using a Valheim Server package modded with
+        Doorstop, such as `valheim-server-plus`.
+      '';
+    };
+
     openFirewall = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -85,6 +96,13 @@ in {
       requires = ["network.target"];
       after = ["network.target"];
       wantedBy = ["multi-user.target"];
+
+      environment = {
+        DOORSTOP_ENABLE =
+          if cfg.doorstop
+          then "TRUE"
+          else "FALSE";
+      };
 
       serviceConfig = {
         Type = "exec";

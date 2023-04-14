@@ -54,8 +54,11 @@ stdenv.mkDerivation rec {
     # https://github.com/NixOS/patchelf/pull/459
     # makes it into a release.
     makeWrapper $out/valheim_server.x86_64 $out/valheim_server \
-      ${lib.optionalString (valheimPlus != null)
-        "--set LD_PRELOAD ${valheimPlus}/doorstop_libs/libdoorstop_x64.so"} \
+      ${lib.optionalString (valheimPlus != null) '' \
+        --set LD_PRELOAD ${valheimPlus}/doorstop_libs/libdoorstop_x64.so \
+        --set DOORSTOP_INVOKE_DLL_PATH \"${valheimPlus}/BepInEx/core/BepInEx.Preloader.dll\" \
+        --set DOORSTOP_CORLIB_OVERRIDE_PATH \"${valheimPlus}/unstripped_corlib\" \
+      ''} \
       --set SteamAppId 892970
 
     runHook postInstall

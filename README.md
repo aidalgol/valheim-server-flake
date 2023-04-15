@@ -28,9 +28,9 @@ Add this flake as an input, add add the NixOS module.  Your config should look s
         ./configuration.nix
         valheim-server.nixosModules.${system}.default
       ];
-      # Only required if you want to use the ValheimPlus mod.
       specialArgs = {
-        inherit (valheim-server.lib.${system}) mkValheimServerPlus;
+        valheim-server-flake = valheim-server;
+        inherit system;
       };
     };
   };
@@ -42,7 +42,6 @@ Then in your `configuration.nix`,
 {
   config,
   pkgs,
-  mkValheimServerPlus, # Only if using ValheimPlus.
   ...  
 }: {
   # ...
@@ -52,10 +51,12 @@ Then in your `configuration.nix`,
     worldName = "Midgard";
     openFirewall = true;
     password = "sekkritpasswd";
-    # If using ValheimPlus, you also need to provide a config file.
-    package = mkValheimServerPlus {valheimPlusConfig = builtins.readFile ./valheim_plus.cfg;};
+    # If you want ValheimPlus.
+    usePlus = true;
+    valheimPlusConfig = builtins.readFile ./valheim_plus.cfg;
   # ...
 }
 ```
 
-The mechanism for passing the ValheimPlus config file is like this because the config file must be in-tree at a certain location; there is unfortunately no mechanism for providing a configuration file at an alternate location.
+## Notes on using ValheimPlus
+Because BepInEx (the mod framework ValheimPlus uses) must both be installed in tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

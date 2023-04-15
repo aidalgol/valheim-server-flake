@@ -2,18 +2,15 @@
   config,
   pkgs,
   lib,
+  system,
+  valheim-server-flake,
   ...
 }: let
   cfg = config.services.valheim;
+  stateDir = "/var/lib/valheim";
 in {
   options.services.valheim = {
     enable = lib.mkEnableOption (lib.mdDoc "Valheim Dedicated Server");
-
-    package = lib.mkOption {
-      type = with lib.types; nullOr package;
-      default = null;
-      description = lib.mdDoc "The Valheim Dedicated Server package to use.";
-    };
 
     serverName = lib.mkOption {
       type = lib.types.str;
@@ -73,6 +70,17 @@ in {
         can be viewed by any user on the system able to list processes.
       '';
     };
+
+    usePlus = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = lib.mdDoc "Whether to use the ValheimPlus mod.";
+    };
+
+    valheimPlusConfig = lib.mkOption {
+      type = with lib.types; nullOr str;
+      description = lib.mdDoc "Contents of the `valheim_plus.cfg` file.";
+    };
   };
 
   config = {
@@ -80,30 +88,103 @@ in {
       users.valheim = {
         isSystemUser = true;
         group = "valheim";
-        home = "/var/lib/valheim";
+        home = stateDir;
       };
       groups.valheim = {};
     };
 
-    systemd.services.valheim = {
-      description = "Valheim dedicated server";
-      requires = ["network.target"];
-      after = ["network.target"];
-      wantedBy = ["multi-user.target"];
+    systemd.services = let
+      installDir = "${stateDir}/valheim-server-plus";
+    in {
+      valheim = {
+        description = "Valheim dedicated server";
+        requires = ["network.target" "valheim-setup.service"];
+        after = ["network.target" "valheim-setup.service"];
+        wantedBy = ["multi-user.target"];
 
-      serviceConfig = {
-        Type = "exec";
-        User = "valheim";
-        ExecStart = lib.strings.concatStringsSep " " ([
-            "${cfg.package}/bin/valheim-server"
-            "-name \"${cfg.serverName}\""
-          ]
-          ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")
-          ++ [
-            "-port \"${builtins.toString cfg.port}\""
-            "-password \"${cfg.password}\""
-          ]
-          ++ (lib.lists.optional cfg.crossplay "-crossplay"));
+        preStart = lib.optionalString cfg.usePlus ''
+          rm -rf ${installDir}
+          mkdir ${installDir}
+          cp -r \
+            ${valheim-server-flake.packages.${system}.valheim-server-unwrapped}/* \
+            ${valheim-server-flake.packages.${system}.valheim-plus}/* \
+            ${installDir}
+          # BepInEx doesn't like read-only files.
+          chmod -R u+w ${installDir}
+          echo "${cfg.valheimPlusConfig}" > ${installDir}/BepInEx/config/valheim_plus.cfg
+        '';
+
+        serviceConfig = let
+          valheimPlusFHSEnvWrapper = pkgs.buildFHSUserEnv {
+            name = "valheim-server";
+            runScript = let
+              libdoorstopFilename = "libdoorstop_x64.so";
+            in
+              pkgs.writeScript "valheim-server-plus-wrapper" ''
+                # Whether or not to enable Doorstop. Valid values: TRUE or FALSE
+                export DOORSTOP_ENABLE=TRUE
+
+                # What .NET assembly to execute. Valid value is a path to a .NET DLL that mono can execute.
+                export DOORSTOP_INVOKE_DLL_PATH="${installDir}/BepInEx/core/BepInEx.Preloader.dll"
+
+                # Which folder should be put in front of the Unity dll loading path
+                export DOORSTOP_CORLIB_OVERRIDE_PATH="${installDir}/unstripped_corlib"
+
+                export LD_LIBRARY_PATH=${installDir}/doorstop_libs:$LD_LIBRARY_PATH
+                export LD_PRELOAD=${libdoorstopFilename}
+
+                export LD_LIBRARY_PATH=${valheim-server-flake.inputs.steam-fetcher.packages.x86_64-linux.steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH
+                export SteamAppId=892970
+
+                exec ${installDir}/valheim_server.x86_64 "$@"
+              '';
+
+            targetPkgs = with pkgs;
+              pkgs: [
+                valheim-server-flake.inputs.steam-fetcher.packages.x86_64-linux.steamworks-sdk-redist
+                zlib
+                pulseaudio
+              ];
+          };
+        in {
+          Type = "exec";
+          User = "valheim";
+          ExecStart = let
+            valheimServerPkg =
+              if cfg.usePlus
+              then valheimPlusFHSEnvWrapper
+              else valheim-server-flake.packages.${system}.valheim-server;
+          in
+            lib.strings.concatStringsSep " " ([
+                "${valheimServerPkg}/bin/valheim-server"
+                "-name \"${cfg.serverName}\""
+              ]
+              ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")
+              ++ [
+                "-port \"${builtins.toString cfg.port}\""
+                "-password \"${cfg.password}\""
+              ]
+              ++ (lib.lists.optional cfg.crossplay "-crossplay"));
+        };
+      };
+
+      valheim-setup = {
+        before = ["valheim.service"];
+        serviceConfig = {
+          Type = "oneshot";
+          User = "valheim";
+        };
+        script = ''
+          rm -rf ${installDir}
+          mkdir ${installDir}
+          cp -r \
+            ${valheim-server-flake.packages.${system}.valheim-server-unwrapped}/* \
+            ${valheim-server-flake.packages.${system}.valheim-plus}/* \
+            ${installDir}
+          # BepInEx doesn't like read-only files.
+          chmod -R u+w ${installDir}
+          echo "${cfg.valheimPlusConfig}" > ${installDir}/BepInEx/config/valheim_plus.cfg
+        '';
       };
     };
 
@@ -116,10 +197,6 @@ in {
 
     assertions = [
       {
-        assertion = cfg.package != null;
-        message = "The Valheim Dedicated Server package must be provided.";
-      }
-      {
         assertion = cfg.serverName != "";
         message = "The server name must not be empty.";
       }
@@ -130,6 +207,10 @@ in {
       {
         assertion = cfg.password != "";
         message = "The password must not be empty.";
+      }
+      {
+        assertion = cfg.usePlus -> cfg.valheimPlusConfig != "";
+        message = "You must specify a ValheimPlus config file when using this mod.";
       }
     ];
   };

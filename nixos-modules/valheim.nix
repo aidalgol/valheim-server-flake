@@ -73,13 +73,6 @@ in {
         can be viewed by any user on the system able to list processes.
       '';
     };
-
-    valheimPlusCfg = lib.mkOption {
-      type = with lib.types; nullOr str;
-      description = lib.mdDoc ''
-        Contents of the `valheim_plus.cfg` file.
-      '';
-    };
   };
 
   config = {

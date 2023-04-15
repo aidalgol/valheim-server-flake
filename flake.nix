@@ -24,7 +24,20 @@
           alejandra
           statix
         ];
-      in {
+
+        mkValheimServerPlusUnwrapped = pkgs.callPackage ./pkgs/builders/make-valheim-server-plus.nix {};
+      in rec {
+        lib = {
+          mkValheimServerPlus = {valheimPlusConfig}:
+            pkgs.callPackage ./pkgs/valheim-server/fhsenv-plus.nix {
+              valheim-server-plus-unwrapped = mkValheimServerPlusUnwrapped {
+                inherit (packages) valheim-server-unwrapped valheim-plus;
+                valheimPlusConfig = pkgs.writeText "valheim-plus-config" valheimPlusConfig;
+              };
+              inherit (steam-fetcher.packages.${system}) steamworks-sdk-redist;
+            };
+        };
+
         packages = rec {
           default = valheim-server;
 
@@ -37,14 +50,7 @@
             inherit (steam-fetcher.packages.${system}) steamworks-sdk-redist;
           };
 
-          valheim-server-plus-unwrapped = pkgs.callPackage ./pkgs/valheim-server/plus.nix {
-            inherit (steam-fetcher.lib.${system}) fetchSteam;
-          };
-
-          valheim-server-plus = pkgs.callPackage ./pkgs/valheim-server/fhsenv-plus.nix {
-            inherit valheim-server-plus-unwrapped;
-            inherit (steam-fetcher.packages.${system}) steamworks-sdk-redist;
-          };
+          valheim-plus = pkgs.callPackage ./pkgs/valheim-plus {};
         };
 
         nixosModules = rec {

@@ -2,13 +2,18 @@
   config,
   pkgs,
   lib,
-  valheim-server,
   ...
 }: let
   cfg = config.services.valheim;
 in {
   options.services.valheim = {
     enable = lib.mkEnableOption (lib.mdDoc "Valheim Dedicated Server");
+
+    package = lib.mkOption {
+      type = with lib.types; nullOr package;
+      default = null;
+      description = lib.mdDoc "The Valheim Dedicated Server package to use.";
+    };
 
     serverName = lib.mkOption {
       type = lib.types.str;
@@ -87,23 +92,7 @@ in {
       groups.valheim = {};
     };
 
-    systemd.services.valheim = let
-      # We have to do this because ValheimPlus provides to way to specify an
-      # altnerate config file path.
-      valheim-server-final =
-        if cfg.valheimPlusCfg != null
-        then let
-          valheimPlusConfigFilename = "vahleim_plus.cfg";
-          valheim-plus-cfg = pkgs.writeText valheimPlusConfigFilename cfg.valheimPlusCfg;
-        in
-          valheim-server.overrideAttrs (final: prev: {
-            postInstall = ''
-              cp ${valheim-plus-cfg}/${valheimPlusConfigFilename};
-              ${if prev ? postInstall then prev.postInstall else ""}
-            '';
-          })
-        else valheim-server;
-    in {
+    systemd.services.valheim = {
       description = "Valheim dedicated server";
       requires = ["network.target"];
       after = ["network.target"];
@@ -113,7 +102,7 @@ in {
         Type = "exec";
         User = "valheim";
         ExecStart = lib.strings.concatStringsSep " " ([
-            "${valheim-server-final}/bin/valheim-server"
+            "${cfg.package}/bin/valheim-server"
             "-name \"${cfg.serverName}\""
           ]
           ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")
@@ -133,6 +122,10 @@ in {
     };
 
     assertions = [
+      {
+        assertion = cfg.package != null;
+        message = "The Valheim Dedicated Server package must be provided.";
+      }
       {
         assertion = cfg.serverName != "";
         message = "The server name must not be empty.";

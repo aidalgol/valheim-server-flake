@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   valheim-server,
   ...
@@ -67,6 +68,13 @@ in {
         can be viewed by any user on the system able to list processes.
       '';
     };
+
+    valheimPlusCfg = lib.mkOption {
+      type = with lib.types; nullOr str;
+      description = lib.mdDoc ''
+        Contents of the `valheim_plus.cfg` file.
+      '';
+    };
   };
 
   config = {
@@ -79,7 +87,23 @@ in {
       groups.valheim = {};
     };
 
-    systemd.services.valheim = {
+    systemd.services.valheim = let
+      # We have to do this because ValheimPlus provides to way to specify an
+      # altnerate config file path.
+      valheim-server-final =
+        if cfg.valheimPlusCfg != null
+        then let
+          valheimPlusConfigFilename = "vahleim_plus.cfg";
+          valheim-plus-cfg = pkgs.writeText valheimPlusConfigFilename cfg.valheimPlusCfg;
+        in
+          valheim-server.overrideAttrs (final: prev: {
+            postInstall = ''
+              cp ${valheim-plus-cfg}/${valheimPlusConfigFilename};
+              ${if prev ? postInstall then prev.postInstall else ""}
+            '';
+          })
+        else valheim-server;
+    in {
       description = "Valheim dedicated server";
       requires = ["network.target"];
       after = ["network.target"];
@@ -89,7 +113,7 @@ in {
         Type = "exec";
         User = "valheim";
         ExecStart = lib.strings.concatStringsSep " " ([
-            "${valheim-server}/bin/valheim-server"
+            "${valheim-server-final}/bin/valheim-server"
             "-name \"${cfg.serverName}\""
           ]
           ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")

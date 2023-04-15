@@ -23,7 +23,7 @@ buildFHSUserEnv {
       # Which folder should be put in front of the Unity dll loading path
       export DOORSTOP_CORLIB_OVERRIDE_PATH="${valheim-server-plus-unwrapped}/unstripped_corlib"
 
-      export LD_LIBRARY_PATH=${valheim-server-plus-unwrapped}/doorstop_libs/${libdoorstopFilename}:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=${valheim-server-plus-unwrapped}/doorstop_libs:$LD_LIBRARY_PATH
       export LD_PRELOAD=${libdoorstopFilename}
 
       export LD_LIBRARY_PATH=${steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH

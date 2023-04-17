@@ -4,7 +4,7 @@ A Nix flake for the Valheim dedicated server, providing both a package and a Nix
 ## Usage
 (Your NixOS system configuration must already be a flake.)
 
-Add this flake as an input, add add the NixOS module.  Your config should look something like this.
+Add this flake as an input, and add the NixOS module.  Your config should look something like this.
 ```nix
 {
   inputs = {
@@ -59,4 +59,4 @@ Then in your `configuration.nix`,
 ```
 
 ## Notes on using ValheimPlus
-Because BepInEx (the mod framework ValheimPlus uses) must both be installed in tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.
+Because BepInEx (the mod framework ValheimPlus uses) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

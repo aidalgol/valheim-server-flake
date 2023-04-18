@@ -1,14 +1,17 @@
 {
+  self,
+  steam-fetcher,
+}: {
   config,
   pkgs,
   lib,
-  system,
-  valheim-server-flake,
   ...
 }: let
   cfg = config.services.valheim;
   stateDir = "/var/lib/valheim";
 in {
+  config.nixpkgs.overlays = [self.overlays.default steam-fetcher.overlays.default];
+
   options.services.valheim = {
     enable = lib.mkEnableOption (lib.mdDoc "Valheim Dedicated Server");
 
@@ -106,8 +109,8 @@ in {
           rm -rf ${installDir}
           mkdir ${installDir}
           cp -r \
-            ${valheim-server-flake.packages.${system}.valheim-server-unwrapped}/* \
-            ${valheim-server-flake.packages.${system}.valheim-plus}/* \
+            ${pkgs.valheim-server-unwrapped}/* \
+            ${pkgs.valheim-plus}/* \
             ${installDir}
           # BepInEx doesn't like read-only files.
           chmod -R u+w ${installDir}
@@ -133,7 +136,7 @@ in {
                 export LD_LIBRARY_PATH=${installDir}/doorstop_libs:$LD_LIBRARY_PATH
                 export LD_PRELOAD=${libdoorstopFilename}
 
-                export LD_LIBRARY_PATH=${valheim-server-flake.inputs.steam-fetcher.packages.x86_64-linux.steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH
+                export LD_LIBRARY_PATH=${pkgs.steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH
                 export SteamAppId=892970
 
                 exec ${installDir}/valheim_server.x86_64 "$@"
@@ -141,7 +144,7 @@ in {
 
             targetPkgs = with pkgs;
               pkgs: [
-                valheim-server-flake.inputs.steam-fetcher.packages.x86_64-linux.steamworks-sdk-redist
+                pkgs.steamworks-sdk-redist
                 zlib
                 pulseaudio
               ];
@@ -153,7 +156,7 @@ in {
             valheimServerPkg =
               if cfg.usePlus
               then valheimPlusFHSEnvWrapper
-              else valheim-server-flake.packages.${system}.valheim-server;
+              else pkgs.valheim-server;
           in
             lib.strings.concatStringsSep " " ([
                 "${valheimServerPkg}/bin/valheim-server"
@@ -178,8 +181,8 @@ in {
           rm -rf ${installDir}
           mkdir ${installDir}
           cp -r \
-            ${valheim-server-flake.packages.${system}.valheim-server-unwrapped}/* \
-            ${valheim-server-flake.packages.${system}.valheim-plus}/* \
+            ${pkgs.valheim-server-unwrapped}/* \
+            ${pkgs.valheim-plus}/* \
             ${installDir}
           # BepInEx doesn't like read-only files.
           chmod -R u+w ${installDir}

@@ -1,5 +1,5 @@
 # Valheim Server Flake
-A Nix flake for the Valheim dedicated server, providing both a package and a NixOS module.
+A Nix flake for the Valheim dedicated server, providing both an overlay and a NixOS module.
 
 ## Usage
 (Your NixOS system configuration must already be a flake.)
@@ -19,19 +19,15 @@ Add this flake as an input, and add the NixOS module.  Your config should look s
     nixpkgs,
     valheim-server,
   }: let
-    pkgs = import nixpkgs {inherit system;};
     system = "x86_64-linux";
+    pkgs = import nixpkgs {inherit system;};
   in {
     nixosConfigurations.my-server= nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
         ./configuration.nix
-        valheim-server.nixosModules.${system}.default
+        valheim-server.nixosModules.default
       ];
-      specialArgs = {
-        valheim-server-flake = valheim-server;
-        inherit system;
-      };
     };
   };
 }
@@ -44,6 +40,12 @@ Then in your `configuration.nix`,
   pkgs,
   ...  
 }: {
+  # ...
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "valheim-server"
+      "steamworks-sdk-redist"
+    ];
   # ...
   services.valheim = {
     enable = true;

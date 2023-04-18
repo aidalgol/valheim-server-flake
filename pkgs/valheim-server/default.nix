@@ -39,8 +39,7 @@ stdenv.mkDerivation rec {
     description = "Valheim dedicated server";
     homepage = "https://steamdb.info/app/896660/";
     changelog = "https://store.steampowered.com/news/app/892970?updates=true";
-    # TODO: Figure out how to allow nonfree packages from flakes.
-    # license = licenses.unfree;
+    license = licenses.unfree;
     maintainers = with maintainers; [aidalgol];
     platforms = ["x86_64-linux"];
   };

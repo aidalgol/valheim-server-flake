@@ -101,8 +101,8 @@ in {
     in {
       valheim = {
         description = "Valheim dedicated server";
-        requires = ["network.target" "valheim-setup.service"];
-        after = ["network.target" "valheim-setup.service"];
+        requires = ["network.target"];
+        after = ["network.target"];
         wantedBy = ["multi-user.target"];
 
         preStart = lib.optionalString cfg.usePlus ''
@@ -169,25 +169,6 @@ in {
               ]
               ++ (lib.lists.optional cfg.crossplay "-crossplay"));
         };
-      };
-
-      valheim-setup = {
-        before = ["valheim.service"];
-        serviceConfig = {
-          Type = "oneshot";
-          User = "valheim";
-        };
-        script = ''
-          rm -rf ${installDir}
-          mkdir ${installDir}
-          cp -r \
-            ${pkgs.valheim-server-unwrapped}/* \
-            ${pkgs.valheim-plus}/* \
-            ${installDir}
-          # BepInEx doesn't like read-only files.
-          chmod -R u+w ${installDir}
-          echo "${cfg.valheimPlusConfig}" > ${installDir}/BepInEx/config/valheim_plus.cfg
-        '';
       };
     };
 

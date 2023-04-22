@@ -55,7 +55,22 @@ Then in your `configuration.nix`,
     password = "sekkritpasswd";
     # If you want ValheimPlus.
     usePlus = true;
-    valheimPlusConfig = builtins.readFile ./valheim_plus.cfg;
+    valheimPlusConfig = ./valheim_plus.cfg;
+    # If you want to use additional BepInEx mods
+    # (not currently supported without ValheimPlus).
+    bepinexMods = [
+      (pkgs.fetchValheimBepInExMod {
+        name = "some-mod";
+        url = "https://thunderstore.io/package/download/SomeModAuthor/SomeMod/x.y.z/";
+        hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      })
+      # ...
+    ];
+    bepinexConfigs = [
+      ./some_mod.cfg
+      # ...
+    ];
+  };
   # ...
 }
 ```

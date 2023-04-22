@@ -63,6 +63,7 @@
           valheim-server-unwrapped = final.callPackage ./pkgs/valheim-server {};
           valheim-server = final.callPackage ./pkgs/valheim-server/fhsenv.nix {};
           valheim-plus = final.callPackage ./pkgs/valheim-plus {};
+          fetchValheimBepInExMod = final.callPackage ./pkgs/build-support/fetch-bepinex-mod {};
         };
       };
 }

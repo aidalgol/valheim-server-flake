@@ -81,8 +81,40 @@ in {
     };
 
     valheimPlusConfig = lib.mkOption {
-      type = with lib.types; nullOr str;
-      description = lib.mdDoc "Contents of the `valheim_plus.cfg` file.";
+      type = with lib.types; nullOr path;
+      description = lib.mdDoc "A `valheim_plus.cfg` file.";
+      example = lib.types.literalExpression "./valheim_plus.cfg";
+    };
+
+    bepinexMods = lib.mkOption {
+      type = with lib; types.listOf types.package;
+      default = [];
+      description = "Additional BepInEx mods to install on top of ValheimPlus.";
+      example = lib.types.literalExpression ''
+        [
+          (pkgs.fetchValheimBepInExMod {
+            name = "some-mod";
+            url = "https://thunderstore.io/package/download/SomeModAuthor/SomeMod/x.y.z/";
+            hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+          })
+        ]
+      '';
+    };
+
+    bepinexConfigs = lib.mkOption {
+      type = with lib; types.listOf types.path;
+      default = [];
+      description = ''
+        Additional config files for BepInEx mods (not including the ValheimPlus config).
+
+        The filename must be what the given mod is expecting, otherwise it will
+        not be loaded.
+      '';
+      example = lib.types.literalExpression ''
+        [
+          ./some_mod.cfg
+        ]
+      '';
     };
   };
 
@@ -105,17 +137,64 @@ in {
         after = ["network.target"];
         wantedBy = ["multi-user.target"];
 
-        preStart = lib.optionalString cfg.usePlus ''
-          rm -rf ${installDir}
-          mkdir ${installDir}
-          cp -r \
-            ${pkgs.valheim-server-unwrapped}/* \
-            ${pkgs.valheim-plus}/* \
-            ${installDir}
-          # BepInEx doesn't like read-only files.
-          chmod -R u+w ${installDir}
-          echo "${cfg.valheimPlusConfig}" > ${installDir}/BepInEx/config/valheim_plus.cfg
-        '';
+        preStart = let
+          mods =
+            if cfg.bepinexMods == []
+            then null
+            else
+              pkgs.symlinkJoin {
+                name = "valheim-bepinex-mods";
+                paths = cfg.bepinexMods;
+                postBuild = ''
+                  rm -f \
+                    "$out"/*.md \
+                    "$out"/icon.png \
+                    "$out"/manifest.json
+                '';
+              };
+          modConfigs =
+            if cfg.bepinexConfigs == []
+            then null
+            else
+              pkgs.runCommandLocal "valheim-bepinex-configs" {
+                configs = cfg.bepinexConfigs;
+              } ''
+                mkdir "$out"
+                for cfg in $configs; do
+                  cp $cfg "$out"
+                done
+              '';
+        in
+          lib.optionalString cfg.usePlus ''
+            chmod -R +w ${installDir}
+            rm -rf ${installDir}
+            mkdir ${installDir}
+            cp -r \
+              ${pkgs.valheim-server-unwrapped}/* \
+              ${pkgs.valheim-plus}/* \
+              ${installDir}
+
+            # BepInEx doesn't like read-only files.
+            chmod -R u+w ${installDir}
+
+            cp -L "${cfg.valheimPlusConfig}" ${installDir}/BepInEx/config/valheim_plus.cfg
+            # Even this can't be read-only.
+            chmod u+w ${installDir}/BepInEx/config/valheim_plus.cfg
+          ''
+          + lib.optionalString (cfg.bepinexMods != []) ''
+            # Install extra mods.
+            cp -rL "${mods}"/. ${installDir}/BepInEx/plugins/
+
+            # BepInEx *really* doesn't like *any* read-only files.
+            chmod -R u+w ${installDir}/BepInEx/plugins/
+          ''
+          + lib.optionalString (cfg.bepinexConfigs != []) ''
+            # Install extra mod configs.
+            cp -r ${modConfigs}/. ${installDir}/BepInEx/config/
+
+            # BepInEx *really* doesn't like *any* read-only files.
+            chmod -R u+w ${installDir}/BepInEx/config/
+          '';
 
         serviceConfig = let
           valheimPlusFHSEnvWrapper = pkgs.buildFHSUserEnv {
@@ -195,6 +274,15 @@ in {
       {
         assertion = cfg.usePlus -> cfg.valheimPlusConfig != "";
         message = "You must specify a ValheimPlus config file when using this mod.";
+      }
+      # TODO: Uncomment when readFileType makes it into Nix stable.
+      # {
+      #   assertion = (builtins.readFileType cfg.valheimPlusConfig) == "regular";
+      #   message = "The ValheimPlus config file path must point to a regular file.";
+      # }
+      {
+        assertion = (cfg.bepinexMods != []) -> cfg.usePlus != "";
+        message = "Installing BepInEx mods currently only supported with ValehimPlus.";
       }
     ];
   };

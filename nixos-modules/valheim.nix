@@ -161,7 +161,7 @@ in {
               } ''
                 mkdir "$out"
                 for cfg in $configs; do
-                  cp $cfg "$out"
+                  cp $cfg $out/$(stripHash $cfg)
                 done
               '';
         in

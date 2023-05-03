@@ -62,7 +62,7 @@
         overlays.default = final: prev: {
           valheim-server-unwrapped = final.callPackage ./pkgs/valheim-server {};
           valheim-server = final.callPackage ./pkgs/valheim-server/fhsenv.nix {};
-          valheim-plus = final.callPackage ./pkgs/valheim-plus {};
+          valheim-bepinex-pack = final.callPackage ./pkgs/bepinex-pack {};
           fetchValheimThunderstoreMod = final.callPackage ./pkgs/build-support/fetch-thunderstore-mod {};
         };
       };

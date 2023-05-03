@@ -74,22 +74,10 @@ in {
       '';
     };
 
-    usePlus = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = lib.mdDoc "Whether to use the ValheimPlus mod.";
-    };
-
-    valheimPlusConfig = lib.mkOption {
-      type = with lib.types; nullOr path;
-      description = lib.mdDoc "A `valheim_plus.cfg` file.";
-      example = lib.types.literalExpression "./valheim_plus.cfg";
-    };
-
     bepinexMods = lib.mkOption {
       type = with lib; types.listOf types.package;
       default = [];
-      description = "Additional BepInEx mods to install on top of ValheimPlus.";
+      description = "BepInEx mods to install.";
       example = lib.types.literalExpression ''
         [
           (pkgs.fetchValheimThunderstoreMod {
@@ -106,7 +94,7 @@ in {
       type = with lib; types.listOf types.path;
       default = [];
       description = ''
-        Additional config files for BepInEx mods (not including the ValheimPlus config).
+        Config files for BepInEx mods.
 
         The filename must be what the given mod is expecting, otherwise it will
         not be loaded.
@@ -130,7 +118,7 @@ in {
     };
 
     systemd.services = let
-      installDir = "${stateDir}/valheim-server-plus";
+      installDir = "${stateDir}/valheim-server-modded";
     in {
       valheim = {
         description = "Valheim dedicated server";
@@ -139,48 +127,37 @@ in {
         wantedBy = ["multi-user.target"];
 
         preStart = let
-          mods =
-            if cfg.bepinexMods == []
-            then null
-            else
-              pkgs.symlinkJoin {
-                name = "valheim-bepinex-mods";
-                paths = cfg.bepinexMods;
-                postBuild = ''
-                  rm -f \
-                    "$out"/*.md \
-                    "$out"/icon.png \
-                    "$out"/manifest.json
-                '';
-              };
+          mods = pkgs.symlinkJoin {
+            name = "valheim-bepinex-mods";
+            paths = cfg.bepinexMods;
+            postBuild = ''
+              rm -f \
+                "$out"/*.md \
+                "$out"/icon.png \
+                "$out"/manifest.json
+            '';
+          };
           modConfigs =
-            if cfg.bepinexConfigs == []
-            then null
-            else
-              pkgs.runCommandLocal "valheim-bepinex-configs" {
-                configs = cfg.bepinexConfigs;
-              } ''
-                mkdir "$out"
-                for cfg in $configs; do
-                  cp $cfg $out/$(stripHash $cfg)
-                done
-              '';
+            pkgs.runCommandLocal "valheim-bepinex-configs" {
+              configs = cfg.bepinexConfigs;
+            } ''
+              mkdir "$out"
+              for cfg in $configs; do
+                cp $cfg $out/$(stripHash $cfg)
+              done
+            '';
         in
-          lib.optionalString cfg.usePlus ''
+          lib.optionalString (cfg.bepinexMods != []) ''
             chmod -R +w ${installDir}
             rm -rf ${installDir}
             mkdir ${installDir}
             cp -r \
               ${pkgs.valheim-server-unwrapped}/* \
-              ${pkgs.valheim-plus}/* \
+              ${pkgs.valheim-bepinex-pack}/* \
               ${installDir}
 
             # BepInEx doesn't like read-only files.
             chmod -R u+w ${installDir}
-
-            cp -L "${cfg.valheimPlusConfig}" ${installDir}/BepInEx/config/valheim_plus.cfg
-            # Even this can't be read-only.
-            chmod u+w ${installDir}/BepInEx/config/valheim_plus.cfg
           ''
           + lib.optionalString (cfg.bepinexMods != []) ''
             # Install extra mods.
@@ -198,29 +175,26 @@ in {
           '';
 
         serviceConfig = let
-          valheimPlusFHSEnvWrapper = pkgs.buildFHSUserEnv {
+          valheimBepInExFHSEnvWrapper = pkgs.buildFHSUserEnv {
             name = "valheim-server";
-            runScript = let
-              libdoorstopFilename = "libdoorstop_x64.so";
-            in
-              pkgs.writeScript "valheim-server-plus-wrapper" ''
-                # Whether or not to enable Doorstop. Valid values: TRUE or FALSE
-                export DOORSTOP_ENABLE=TRUE
+            runScript = pkgs.writeScript "valheim-server-bepinex-wrapper" ''
+              # Whether or not to enable Doorstop. Valid values: TRUE or FALSE
+              export DOORSTOP_ENABLE=TRUE
 
-                # What .NET assembly to execute. Valid value is a path to a .NET DLL that mono can execute.
-                export DOORSTOP_INVOKE_DLL_PATH="${installDir}/BepInEx/core/BepInEx.Preloader.dll"
+              # What .NET assembly to execute. Valid value is a path to a .NET DLL that mono can execute.
+              export DOORSTOP_INVOKE_DLL_PATH="${installDir}/BepInEx/core/BepInEx.Preloader.dll"
 
-                # Which folder should be put in front of the Unity dll loading path
-                export DOORSTOP_CORLIB_OVERRIDE_PATH="${installDir}/unstripped_corlib"
+              # Which folder should be put in front of the Unity dll loading path
+              export DOORSTOP_CORLIB_OVERRIDE_PATH="${installDir}/unstripped_corlib"
 
-                export LD_LIBRARY_PATH=${installDir}/doorstop_libs:$LD_LIBRARY_PATH
-                export LD_PRELOAD=${libdoorstopFilename}
+              export LD_LIBRARY_PATH=${installDir}/doorstop_libs:$LD_LIBRARY_PATH
+              export LD_PRELOAD="libdoorstop_x64.so"
 
-                export LD_LIBRARY_PATH=${pkgs.steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH
-                export SteamAppId=892970
+              export LD_LIBRARY_PATH=${pkgs.steamworks-sdk-redist}/lib:$LD_LIBRARY_PATH
+              export SteamAppId=892970
 
-                exec ${installDir}/valheim_server.x86_64 "$@"
-              '';
+              exec ${installDir}/valheim_server.x86_64 "$@"
+            '';
 
             targetPkgs = with pkgs;
               pkgs: [
@@ -234,8 +208,8 @@ in {
           User = "valheim";
           ExecStart = let
             valheimServerPkg =
-              if cfg.usePlus
-              then valheimPlusFHSEnvWrapper
+              if (cfg.bepinexMods != [])
+              then valheimBepInExFHSEnvWrapper
               else pkgs.valheim-server;
           in
             lib.strings.concatStringsSep " " ([
@@ -297,19 +271,6 @@ in {
       {
         assertion = cfg.password != "";
         message = "The password must not be empty.";
-      }
-      {
-        assertion = cfg.usePlus -> cfg.valheimPlusConfig != "";
-        message = "You must specify a ValheimPlus config file when using this mod.";
-      }
-      # TODO: Uncomment when readFileType makes it into Nix stable.
-      # {
-      #   assertion = (builtins.readFileType cfg.valheimPlusConfig) == "regular";
-      #   message = "The ValheimPlus config file path must point to a regular file.";
-      # }
-      {
-        assertion = (cfg.bepinexMods != []) -> cfg.usePlus != "";
-        message = "Installing BepInEx mods currently only supported with ValehimPlus.";
       }
     ];
   };

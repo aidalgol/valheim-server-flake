@@ -53,12 +53,10 @@ Then in your `configuration.nix`,
     worldName = "Midgard";
     openFirewall = true;
     password = "sekkritpasswd";
-    # If you want ValheimPlus.
-    usePlus = true;
-    valheimPlusConfig = ./valheim_plus.cfg;
-    # If you want to use additional BepInEx mods
-    # (not currently supported without ValheimPlus).
+    # If you want to use BepInEx mods.
     bepinexMods = [
+      # This does NOT fetch mod dependencies.  You need to add those manually,
+      # if there are any (besides BepInEx).
       (pkgs.fetchValheimThunderstoreMod {
         owner = "Somebody";
         name = "SomeMod";
@@ -76,5 +74,5 @@ Then in your `configuration.nix`,
 }
 ```
 
-## Notes on using ValheimPlus
-Because BepInEx (the mod framework ValheimPlus uses) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.
+## Notes on using mods
+Because BepInEx (the mod framework used by just about every Valheim mod) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

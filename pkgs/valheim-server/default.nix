@@ -39,6 +39,7 @@ stdenv.mkDerivation rec {
     description = "Valheim dedicated server";
     homepage = "https://steamdb.info/app/896660/";
     changelog = "https://store.steampowered.com/news/app/892970?updates=true";
+    sourceProvenance = with sourceTypes; [binaryBytecode binaryNativeCode];
     license = licenses.unfree;
     maintainers = with maintainers; [aidalgol];
     platforms = ["x86_64-linux"];

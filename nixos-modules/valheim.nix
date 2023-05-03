@@ -148,8 +148,10 @@ in {
             '';
         in
           lib.optionalString (cfg.bepinexMods != []) ''
-            chmod -R +w ${installDir}
-            rm -rf ${installDir}
+            if [ -e ${installDir} ]; then
+              chmod -R +w ${installDir}
+              rm -rf ${installDir}
+            fi
             mkdir ${installDir}
             cp -r \
               ${pkgs.valheim-server-unwrapped}/* \

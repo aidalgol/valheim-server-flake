@@ -92,9 +92,10 @@ in {
       description = "Additional BepInEx mods to install on top of ValheimPlus.";
       example = lib.types.literalExpression ''
         [
-          (pkgs.fetchValheimBepInExMod {
-            name = "some-mod";
-            url = "https://thunderstore.io/package/download/SomeModAuthor/SomeMod/x.y.z/";
+          (pkgs.fetchValheimThunderstoreMod {
+            owner = "Somebody";
+            name = "SomeMod";
+            version = "x.y.z";
             hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
           })
         ]

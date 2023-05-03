@@ -59,9 +59,10 @@ Then in your `configuration.nix`,
     # If you want to use additional BepInEx mods
     # (not currently supported without ValheimPlus).
     bepinexMods = [
-      (pkgs.fetchValheimBepInExMod {
-        name = "some-mod";
-        url = "https://thunderstore.io/package/download/SomeModAuthor/SomeMod/x.y.z/";
+      (pkgs.fetchValheimThunderstoreMod {
+        owner = "Somebody";
+        name = "SomeMod";
+        version = "x.y.z";
         hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
       })
       # ...

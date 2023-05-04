@@ -253,7 +253,7 @@ in {
           LockPersonality = true;
           NoNewPrivileges = true;
           RestrictRealtime = true;
-          RestrictNamespaces = ["unshare"];
+          RestrictNamespaces = ["user" "mnt"];
           SystemCallArchitectures = "native";
           SystemCallFilter = ["~@obsolete" "@clock" "@debug" "@module" "@mount" "@privileged" "@reboot" "@setuid" "@cpu-emulation"];
           CapabilityBoundingSet = [];

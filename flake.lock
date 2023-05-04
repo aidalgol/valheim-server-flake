@@ -67,11 +67,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1682366954,
-        "narHash": "sha256-tg8KxIvkzPBuq4Z/62UY1bC6ezlo9ZTq/kPM00x3TmY=",
+        "lastModified": 1683172481,
+        "narHash": "sha256-a48hi/HX6T7DJAxqgVFAmUQGv6sCFixhyPxhOPC8WDQ=",
         "owner": "aidalgol",
         "repo": "nix-steam-fetcher",
-        "rev": "b1dd4b5518e949c0b09852990a24135bca18cc1f",
+        "rev": "8b8537b83e95d50a41d4317ded251bdbee464671",
         "type": "github"
       },
       "original": {

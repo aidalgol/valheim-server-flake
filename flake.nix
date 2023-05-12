@@ -1,5 +1,5 @@
 {
-  description = "Some flake-based project";
+  description = "NixOS module for the Valheim dedicated server";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";

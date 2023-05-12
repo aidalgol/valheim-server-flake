@@ -57,8 +57,6 @@
           valheim = import ./nixos-modules/valheim.nix {inherit self steam-fetcher;};
           default = valheim;
         };
-      }
-      // {
         overlays.default = final: prev: {
           valheim-server-unwrapped = final.callPackage ./pkgs/valheim-server {};
           valheim-server = final.callPackage ./pkgs/valheim-server/fhsenv.nix {};

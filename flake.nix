@@ -6,6 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     steam-fetcher = {
       url = "github:nix-community/steam-fetcher";
+      inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

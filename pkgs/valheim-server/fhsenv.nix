@@ -1,5 +1,4 @@
 {
-  lib,
   buildFHSUserEnv,
   writeScript,
   valheim-server-unwrapped,

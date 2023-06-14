@@ -224,32 +224,6 @@ in {
                 "-password \"${cfg.password}\""
               ]
               ++ (lib.lists.optional cfg.crossplay "-crossplay"));
-
-          # Security settings
-          LockPersonality = true;
-          NoNewPrivileges = true;
-          RestrictRealtime = true;
-          RestrictNamespaces = ["user" "mnt"];
-          SystemCallArchitectures = "native";
-          SystemCallFilter = ["~@obsolete" "@clock" "@debug" "@module" "@mount" "@privileged" "@reboot" "@setuid" "@cpu-emulation"];
-          CapabilityBoundingSet = [];
-          RestrictAddressFamilies = ["AF_INET" "AF_INET6"];
-          RestrictSUIDSGID = true;
-          PrivateDevices = true;
-          PrivateTmp = true;
-          PrivateMounts = true;
-          PrivateUsers = true;
-          ProtectControlGroups = true;
-          ProtectHome = true;
-          ProtectKernelModules = true;
-          ProtectKernelTunables = true;
-          ProtectSystem = "strict";
-          ReadWritePaths = [stateDir];
-          ProtectClock = true;
-          ProtectKernelLogs = true;
-          ProtectProc = "invisible";
-          ProtectHostname = true;
-          RemoveIPC = true;
         };
       };
     };

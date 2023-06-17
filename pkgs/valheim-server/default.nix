@@ -10,8 +10,8 @@ stdenv.mkDerivation rec {
     inherit name;
     appId = "896660";
     depotId = "896661";
-    manifestId = "1755534777276869897";
-    hash = "sha256-HOtUHYinkWlPWOLQpufjyreAiqHaeFcqWrlR/Ge5uu0=";
+    manifestId = "2499143936238011131";
+    hash = "sha256-Qu2iKjSDQO/lurnhSuUwtGtVzCgyX+Z1Z3iSrisgH4w=";
   };
 
   # Skip phases that don't apply to prebuilt binaries.

@@ -1,23 +1,5 @@
 {
   "nodes": {
-    "flake-utils": {
-      "inputs": {
-        "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1692799911,
-        "narHash": "sha256-3eihraek4qL744EvQXsK1Ha6C3CR7nnT8X2qWap4RNk=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "f9e7cf818399d17d347f847525c5a5a8032e4e44",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1686513595,
@@ -42,37 +24,21 @@
     },
     "steam-fetcher": {
       "inputs": {
-        "flake-utils": "flake-utils",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1686720327,
-        "narHash": "sha256-tXr09buKDKv81pnmcIwJ7eq2MaaU+4qfYrp6Mvb8buw=",
+        "lastModified": 1694424148,
+        "narHash": "sha256-1PV7sxioWWD/yLxnkLVOL6zvlTOBl98kUv4ol4p0ozo=",
         "owner": "nix-community",
         "repo": "steam-fetcher",
-        "rev": "30964171f7c1711dc6edbe98f0839a40477a6f54",
+        "rev": "2033f99c7aee506f5af18026a3cab1c93bd0439f",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "steam-fetcher",
-        "type": "github"
-      }
-    },
-    "systems": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
         "type": "github"
       }
     }

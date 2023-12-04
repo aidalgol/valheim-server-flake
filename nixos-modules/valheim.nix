@@ -113,6 +113,7 @@ in {
         isSystemUser = true;
         group = "valheim";
         home = stateDir;
+        createHome = true;
       };
       groups.valheim = {};
     };

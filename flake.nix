@@ -20,7 +20,10 @@
     pkgsFor = system:
       import nixpkgs {
         inherit system;
-        overlays = [steam-fetcher.overlays.default];
+        overlays = [
+          steam-fetcher.overlays.default
+          self.overlays.default
+        ];
       };
     lintersFor = system: let
       pkgs = pkgsFor system;
@@ -72,5 +75,10 @@
       valheim-bepinex-pack = final.callPackage ./pkgs/bepinex-pack {};
       fetchValheimThunderstoreMod = final.callPackage ./pkgs/build-support/fetch-thunderstore-mod {};
     };
+    packages = forAllSystems (system: let
+      pkgs = pkgsFor system;
+    in {
+      valheim-server = pkgs.valheim-server;
+    });
   };
 }

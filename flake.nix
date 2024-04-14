@@ -69,16 +69,21 @@
       valheim = import ./nixos-modules/valheim.nix {inherit self steam-fetcher;};
       default = valheim;
     };
-    overlays.default = final: prev: {
-      valheim-server-unwrapped = final.callPackage ./pkgs/valheim-server {};
+
+    overlays.default = final: prev: let
+      pkgs = pkgsFor final.system;
+    in {
+      valheim-server-unwrapped = final.callPackage ./pkgs/valheim-server {inherit (pkgs) fetchSteam;};
       valheim-server = final.callPackage ./pkgs/valheim-server/fhsenv.nix {};
       valheim-bepinex-pack = final.callPackage ./pkgs/bepinex-pack {};
       fetchValheimThunderstoreMod = final.callPackage ./pkgs/build-support/fetch-thunderstore-mod {};
     };
+
     packages = forAllSystems (system: let
       pkgs = pkgsFor system;
     in {
-      valheim-server = pkgs.valheim-server;
+      inherit (pkgs) valheim-server;
+      inherit (pkgs) valheim-bepinex-pack;
     });
   };
 }

@@ -8,11 +8,8 @@ Add this flake as an input, and add the NixOS module.  Your config should look s
 ```nix
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    valheim-server = {
-      url = "github:aidalgol/valheim-server-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    valheim-server.url = "github:aidalgol/valheim-server-flake";
   };
   outputs = {
     self,
@@ -73,6 +70,10 @@ Then in your `configuration.nix`,
   # ...
 }
 ```
+
+## valheim-server or steamworks-sdk-redist hash missmatch
+
+valheim-server uses steam-fetcher which in turn uses, depotdownloader to fetch Steam packages from the Steam Depot. It's been noticed that depotdownloader produces different hashes between different versions of nixpkgs. If you're encountering issues and have set `inputs.nixpkgs.follows` for this flake, try removing that. The overlays explicitly use the nixpkgs from this flakes input for steam-fetcher.
 
 ## Notes on using mods
 Because BepInEx (the mod framework used by just about every Valheim mod) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

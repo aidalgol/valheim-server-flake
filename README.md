@@ -71,9 +71,8 @@ Then in your `configuration.nix`,
 }
 ```
 
-## valheim-server or steamworks-sdk-redist hash missmatch
-
-valheim-server uses steam-fetcher which in turn uses, depotdownloader to fetch Steam packages from the Steam Depot. It's been noticed that depotdownloader produces different hashes between different versions of nixpkgs. If you're encountering issues and have set `inputs.nixpkgs.follows` for this flake, try removing that. The overlays explicitly use the nixpkgs from this flakes input for steam-fetcher.
+## `valheim-server` or `steamworks-sdk-redist` hash missmatch
+`valheim-server` uses [`steam-fetcher`](https://github.com/nix-community/steam-fetcher) which in turn uses DepotDownloader to fetch Steam packages from the Steam Depot.  DepotDownloader may produce different results between different versions of DepotDownloader for the exact same depot.  If you get an error about a hash mismatch on and have set `nixpkgs.follows` for this flake input, try removing that.  The overlays explicitly use the nixpkgs from this flake input for `steam-fetcher` to avoid this problem.
 
 ## Notes on using mods
 Because BepInEx (the mod framework used by just about every Valheim mod) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

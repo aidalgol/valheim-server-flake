@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1713389119,
-        "narHash": "sha256-uVJbXj52X7OibwSqnmkByWjMVqYsAbVdtK3X+0a0tCM=",
+        "lastModified": 1694424148,
+        "narHash": "sha256-1PV7sxioWWD/yLxnkLVOL6zvlTOBl98kUv4ol4p0ozo=",
         "owner": "nix-community",
         "repo": "steam-fetcher",
-        "rev": "e5a28494b600df98e63f5160432fae36c727501e",
+        "rev": "2033f99c7aee506f5af18026a3cab1c93bd0439f",
         "type": "github"
       },
       "original": {

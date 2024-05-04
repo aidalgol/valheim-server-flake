@@ -30,7 +30,6 @@
     in
       with pkgs; [
         alejandra
-        statix
       ];
   in {
     devShells = forAllSystems (system: let
@@ -47,23 +46,13 @@
 
     checks = forAllSystems (system: let
       pkgs = pkgsFor system;
-    in
-      builtins.mapAttrs (name: pkgs.runCommandLocal name {nativeBuildInputs = lintersFor system;}) {
-        alejandra = "alejandra --check ${./.} > $out";
-        statix = "statix check ${./.} > $out";
-      });
+    in {
+      fmt = pkgs.runCommandLocal "alejandra" {} ''
+        ${pkgs.alejandra}/bin/alejandra --check ${./.} > "$out"
+      '';
+    });
 
-    formatter = forAllSystems (system: let
-      pkgs = pkgsFor system;
-    in
-      pkgs.writeShellApplication {
-        name = "fmt";
-        runtimeInputs = lintersFor system;
-        text = ''
-          alejandra --quiet .
-          statix fix .
-        '';
-      });
+    formatter = forAllSystems (system: (pkgsFor system).alejandra);
 
     nixosModules = rec {
       valheim = import ./nixos-modules/valheim.nix {inherit self steam-fetcher;};

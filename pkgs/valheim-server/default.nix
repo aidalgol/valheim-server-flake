@@ -3,15 +3,15 @@
   stdenv,
   fetchSteam,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   name = "valheim-server";
-  version = "0.217.38";
+  version = "0.218.15";
   src = fetchSteam {
-    inherit name;
+    inherit (finalAttrs) name;
     appId = "896660";
     depotId = "896661";
-    manifestId = "252049227837324070";
-    hash = "sha256-b5a5lvxwxebSNx64tQDASpx/MS/o4PeABX9al3/NbhU=";
+    manifestId = "8286426478257907309";
+    hash = "sha256-H4GeMdydvm+C5HlkyPCsTUmD8suzpadZZ7qH4mWxUvE=";
   };
 
   # Skip phases that don't apply to prebuilt binaries.
@@ -44,4 +44,4 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [aidalgol];
     platforms = ["x86_64-linux"];
   };
-}
+})

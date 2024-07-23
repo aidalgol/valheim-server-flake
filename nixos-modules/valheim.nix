@@ -165,7 +165,7 @@ in {
             // List admin players ID  ONE per line
             ${lib.concatMapStrings (id: "${id}\n") cfg.adminList}
             EOF
-            chown -R valheim:valheim ${stateDir}/.config
+            chown -R valheim:valheim ${stateDir}/.config/unity3d/IronGate/Valheim/adminlist.txt
           ''
           + lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then

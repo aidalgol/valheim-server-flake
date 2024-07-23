@@ -72,6 +72,16 @@ in {
       '';
     };
 
+    adminList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the adminlist.txt file.
+        These users will have admin privileges on the server.
+      '';
+    };
+
     bepinexMods = lib.mkOption {
       type = with lib; types.listOf types.package;
       default = [];
@@ -148,6 +158,15 @@ in {
               done
             '';
         in
+          lib.optionalString (cfg.adminList != []) ''
+            # Create adminlist.txt
+            mkdir -p ${stateDir}/.config/unity3d/IronGate/Valheim
+            cat > ${stateDir}/.config/unity3d/IronGate/Valheim/adminlist.txt <<EOF
+            // List admin players ID  ONE per line
+            ${lib.concatMapStrings (id: "${id}\n") cfg.adminList}
+            EOF
+            chown -R valheim:valheim ${stateDir}/.config
+          '';
           lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then
               chmod -R +w ${installDir}

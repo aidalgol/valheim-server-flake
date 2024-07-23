@@ -157,15 +157,15 @@ in {
                 cp $cfg $out/$(stripHash $cfg)
               done
             '';
+          createListFile = name: list: ''
+              echo "// List of Steam IDs for ${name} ONE per line" > ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
+              ${lib.concatMapStrings (id: "echo '${id}' >> ${stateDir}/.config/unity3d/IronGate/Valheim/${name}\n") list}
+              chown valheim:valheim ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
+            '';
         in
-          lib.optionalString (cfg.adminList != []) ''
-            # Create adminlist.txt
+          ''
             mkdir -p ${stateDir}/.config/unity3d/IronGate/Valheim
-            cat > ${stateDir}/.config/unity3d/IronGate/Valheim/adminlist.txt <<EOF
-            // List admin players ID  ONE per line
-            ${lib.concatMapStrings (id: "${id}\n") cfg.adminList}
-            EOF
-            chown -R valheim:valheim ${stateDir}/.config/unity3d/IronGate/Valheim/adminlist.txt
+            ${createListFile "adminlist.txt" cfg.adminList}
           ''
           + lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then

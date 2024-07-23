@@ -166,8 +166,8 @@ in {
             ${lib.concatMapStrings (id: "${id}\n") cfg.adminList}
             EOF
             chown -R valheim:valheim ${stateDir}/.config
-          '';
-          lib.optionalString (cfg.bepinexMods != []) ''
+          ''
+          + lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then
               chmod -R +w ${installDir}
               rm -rf ${installDir}

@@ -74,5 +74,24 @@ Then in your `configuration.nix`,
 }
 ```
 
+### Managing the server
+The NixOS module in this flake runs Valheim server as a systemd service, which you can manage this service using `systemctl` and `journalctl`.
+
+```sh
+# Start, stop, or restart the server (requires superuser).
+$ systemctl <start|stop|restart> valheim
+```
+
+```sh
+# Show the runtime status with most recent log data. 
+$ systemctl status valheim
+```
+Note that `nixos-rebuild switch` automatically restarts the service if any attributes under `services.valheim` are changed.  Also be aware that stopping a service does not disable it, and the service will be started again on next boot, `nixos-rebuild switch`, etc.
+
+```sh
+# Show live log from the service.
+$ journalctl -u valheim -f
+```
+
 ## Notes on using mods
 Because BepInEx (the mod framework used by just about every Valheim mod) must both be installed in-tree with Valheim, and to be able to write to various files in the directory tree, we cannot run the modded Valheim server from the Nix store.  To work around this without completely giving up on immutability, we copy the files out of the Nix store to a directory under `/var/lib/valheim` and run from there, but wipe and rebuild this directory on each launch.

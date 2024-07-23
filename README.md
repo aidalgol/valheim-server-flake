@@ -75,20 +75,21 @@ Then in your `configuration.nix`,
 ```
 
 ### Managing the server
-Once you have configured the Valheim server it will run as a service. You can manage this service using `systemctl` and `journalctl`.
+The NixOS module in this flake runs Valheim server as a systemd service, which you can manage this service using `systemctl` and `journalctl`.
 
 ```sh
-# Start, stop or restart the server. (requires superuser)
+# Start, stop, or restart the server (requires superuser).
 $ systemctl <start|stop|restart> valheim
 ```
 
 ```sh
-# Shows the runtime status with most recent log data. 
+# Show the runtime status with most recent log data. 
 $ systemctl status valheim
 ```
+Note that `nixos-rebuild switch` automatically restarts the service if any attributes under `services.valheim` are changed.  Also be aware that stopping a service does not disable it, and the service will be started again on next boot, `nixos-rebuild switch`, etc.
 
 ```sh
-# Shows live logs from the server.
+# Show live log from the service.
 $ journalctl -u valheim -f
 ```
 

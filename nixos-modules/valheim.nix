@@ -78,7 +78,31 @@ in {
       example = [];
       description = lib.mdDoc ''
         List of Steam IDs to be added to the adminlist.txt file.
+
         These users will have admin privileges on the server.
+      '';
+    };
+
+    permittedList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the permittedlist.txt file.
+
+        Only these users will be allowed to join the server if the list is not empty.
+        If you use this, all players not on the list will be unable to join.
+      '';
+    };
+    
+    bannedList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the bannedlist.txt file.
+
+        These users will be banned from the server.
       '';
     };
 
@@ -166,6 +190,8 @@ in {
           ''
             mkdir -p ${stateDir}/.config/unity3d/IronGate/Valheim
             ${createListFile "adminlist.txt" cfg.adminList}
+            ${createListFile "permittedlist.txt" cfg.permittedList}
+            ${createListFile "bannedlist.txt" cfg.bannedList}
           ''
           + lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then

@@ -75,7 +75,10 @@ in {
     adminList = lib.mkOption {
       type = with lib.types; listOf str;
       default = [];
-      example = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
       description = lib.mdDoc ''
         List of Steam IDs to be added to the adminlist.txt file.
 
@@ -86,7 +89,10 @@ in {
     permittedList = lib.mkOption {
       type = with lib.types; listOf str;
       default = [];
-      example = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
       description = lib.mdDoc ''
         List of Steam IDs to be added to the permittedlist.txt file.
 
@@ -98,7 +104,10 @@ in {
     bannedList = lib.mkOption {
       type = with lib.types; listOf str;
       default = [];
-      example = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
       description = lib.mdDoc ''
         List of Steam IDs to be added to the bannedlist.txt file.
 

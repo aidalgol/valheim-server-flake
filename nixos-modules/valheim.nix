@@ -191,8 +191,8 @@ in {
               done
             '';
           createListFile = name: list: ''
-              echo "// List of Steam IDs for ${name} ONE per line" > ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
-              ${lib.concatMapStrings (id: "echo '${id}' >> ${stateDir}/.config/unity3d/IronGate/Valheim/${name}\n") list}
+              echo "// List of Steam IDs for ${name} ONE per line
+              ${lib.strings.concatStringsSep "\n" list}" > ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
               chown valheim:valheim ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
             '';
         in

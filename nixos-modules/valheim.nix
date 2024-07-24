@@ -66,8 +66,22 @@ in {
       default = true;
       description = lib.mdDoc ''
         Toggles visibility on the Steam server & community lists.
+
         When not set, defaults to true (visible).
         Set to false to make the server private.
+      '';
+    };
+
+    logFile = lib.mkOption {
+      type = with lib.types; nullOr str;
+      default = null;
+      example = "/var/log/valheim-server.log";
+      description = lib.mdDoc ''
+        The path where the server log file will be saved.
+
+        When set, this will redirect all logs from stdout to the specified path.
+        This means that the logs will not be captured by systemd's journal.
+        Leave this option unset to keep console logging enabled.
       '';
     };
 
@@ -236,6 +250,7 @@ in {
                 "-public ${if cfg.public then "1" else "0"}"
               ]
               ++ (lib.lists.optional cfg.crossplay "-crossplay")
+              ++ (lib.lists.optional (cfg.logFile != null) "-logFile \"${cfg.logFile}\"")
         };
       };
     };

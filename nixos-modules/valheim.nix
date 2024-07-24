@@ -61,6 +61,16 @@ in {
       description = lib.mdDoc "Whether to open ports in the firewall.";
     };
 
+    public = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = lib.mdDoc ''
+        Toggles visibility on the Steam server & community lists.
+        When not set, defaults to true (visible).
+        Set to false to make the server private.
+      '';
+    };
+
     password = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -223,8 +233,9 @@ in {
               ++ [
                 "-port \"${builtins.toString cfg.port}\""
                 "-password \"${cfg.password}\""
+                "-public ${if cfg.public then "1" else "0"}"
               ]
-              ++ (lib.lists.optional cfg.crossplay "-crossplay"));
+              ++ (lib.lists.optional cfg.crossplay "-crossplay")
         };
       };
     };

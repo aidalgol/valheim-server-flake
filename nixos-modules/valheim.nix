@@ -106,6 +106,49 @@ in {
       '';
     };
 
+    adminList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the adminlist.txt file.
+
+        These users will have admin privileges on the server.
+      '';
+    };
+
+    permittedList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the permittedlist.txt file.
+
+        Only these users will be allowed to join the server if the list is not empty.
+        If you use this, all players not on the list will be unable to join.
+      '';
+    };
+    
+    bannedList = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [
+        "72057602627862526"
+        "72057602627862527"
+      ];
+      description = lib.mdDoc ''
+        List of Steam IDs to be added to the bannedlist.txt file.
+
+        These users will be banned from the server.
+      '';
+    };
+
     bepinexMods = lib.mkOption {
       type = with lib; types.listOf types.package;
       default = [];
@@ -181,8 +224,19 @@ in {
                 cp $cfg $out/$(stripHash $cfg)
               done
             '';
+          createListFile = name: list: ''
+              echo "// List of Steam IDs for ${name} ONE per line
+              ${lib.strings.concatStringsSep "\n" list}" > ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
+              chown valheim:valheim ${stateDir}/.config/unity3d/IronGate/Valheim/${name}
+            '';
         in
-          lib.optionalString (cfg.bepinexMods != []) ''
+          ''
+            mkdir -p ${stateDir}/.config/unity3d/IronGate/Valheim
+            ${createListFile "adminlist.txt" cfg.adminList}
+            ${createListFile "permittedlist.txt" cfg.permittedList}
+            ${createListFile "bannedlist.txt" cfg.bannedList}
+          ''
+          + lib.optionalString (cfg.bepinexMods != []) ''
             if [ -e ${installDir} ]; then
               chmod -R +w ${installDir}
               rm -rf ${installDir}

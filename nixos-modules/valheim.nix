@@ -315,7 +315,7 @@ in {
               ]
               ++ (lib.lists.optional cfg.crossplay "-crossplay")
               ++ (lib.lists.optional (cfg.logFile != null) "-logFile \"${cfg.logFile}\"")
-              ++ (lib.lists.optional (cfg.preset != null) "-preset \"${cfg.preset}\"")
+              ++ (lib.lists.optional (cfg.preset != null) "-preset \"${cfg.preset}\""));
         };
       };
     };

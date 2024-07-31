@@ -85,6 +85,16 @@ in {
       '';
     };
 
+    preset = lib.mkOption {
+      type = lib.types.str; nullOr str;
+      default = null;
+      example = "hardcore";
+      description = lib.mdDoc ''
+        The preset world modifier, valid options are
+        "easy", "hard", "hardcore", "casual", "hammer" and "immersive".
+      '';
+    };
+
     password = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -251,6 +261,7 @@ in {
               ]
               ++ (lib.lists.optional cfg.crossplay "-crossplay")
               ++ (lib.lists.optional (cfg.logFile != null) "-logFile \"${cfg.logFile}\"")
+              ++ (lib.lists.optional (cfg.preset != null) "-preset \"${cfg.preset}\"")
         };
       };
     };

@@ -75,13 +75,16 @@ in {
     logFile = lib.mkOption {
       type = with lib.types; nullOr str;
       default = null;
-      example = "/var/log/valheim-server.log";
+      example = "/var/lib/valheim/log/valheim-server.log";
       description = lib.mdDoc ''
         The path where the server log file will be saved.
 
         When set, this will redirect all logs from stdout to the specified path.
         This means that the logs will not be captured by systemd's journal.
         Leave this option unset to keep console logging enabled.
+
+        Make sure the valheim user has write access to the specified directory, otherwise
+        the valheim service fail to start and exit.
       '';
     };
 

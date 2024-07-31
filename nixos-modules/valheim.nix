@@ -86,7 +86,7 @@ in {
     };
 
     preset = lib.mkOption {
-      type = lib.types.str; nullOr str;
+      type = lib.types; nullOr str;
       default = null;
       example = "hardcore";
       description = lib.mdDoc ''

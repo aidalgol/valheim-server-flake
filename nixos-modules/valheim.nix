@@ -13,6 +13,16 @@ in {
   options.services.valheim = {
     enable = lib.mkEnableOption (lib.mdDoc "Valheim Dedicated Server");
 
+    extraArgs = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [];
+      example = [
+        "-modifier deathpenalty casual"
+        "-modifier raids none"
+      ];
+      description = lib.mdDoc "List of additional args to pass into valheim server binary. Can be used to add world modifiers";
+    };
+
     serverName = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -273,6 +283,7 @@ in {
                 "${valheimServerPkg}/bin/valheim-server"
                 "-name \"${cfg.serverName}\""
               ]
+              ++ cfg.extraArgs
               ++ (lib.lists.optional (cfg.worldName != null) "-world \"${cfg.worldName}\"")
               ++ [
                 "-port \"${builtins.toString cfg.port}\""

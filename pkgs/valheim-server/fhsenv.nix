@@ -1,12 +1,12 @@
 {
-  buildFHSUserEnv,
+  buildFHSEnv,
   writeScript,
   valheim-server-unwrapped,
   steamworks-sdk-redist,
   zlib,
   pulseaudio,
 }:
-buildFHSUserEnv {
+buildFHSEnv {
   name = "valheim-server";
 
   runScript = writeScript "valheim-server-wrapper" ''

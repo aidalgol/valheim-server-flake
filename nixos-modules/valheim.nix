@@ -232,7 +232,7 @@ in {
           '';
 
         serviceConfig = let
-          valheimBepInExFHSEnvWrapper = pkgs.buildFHSUserEnv {
+          valheimBepInExFHSEnvWrapper = pkgs.buildFHSEnv {
             name = "valheim-server";
             runScript = pkgs.writeScript "valheim-server-bepinex-wrapper" ''
               # Whether or not to enable Doorstop. Valid values: TRUE or FALSE

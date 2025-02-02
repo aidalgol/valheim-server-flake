@@ -1,3 +1,9 @@
+# **Archived: Feb 2, 2025**
+I have not played Valheim in a few years now, and so I am no longer in a
+good position to maintain this flake.  It may still be useful as a starting
+point for others, and as an example of how to use the
+[community Steam fetcher](https://github.com/nix-community/steam-fetcher).
+
 # Valheim Server Flake
 A Nix flake for the Valheim dedicated server, providing both an overlay and a NixOS module.
 
